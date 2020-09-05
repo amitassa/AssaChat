@@ -42,29 +42,7 @@ namespace AssaChat
                     ThreadPool.QueueUserWorkItem(obj =>
                     {
                         addClientToList(((IPEndPoint)client.Client.RemoteEndPoint).Port, client);
-                        //---get the incoming data through a network stream---
-                        NetworkStream nwStream = client.GetStream();
-                        byte[] buffer = new byte[client.ReceiveBufferSize];
-
-                        string dataReceived;
-                        //ToDo: split text send and recieve to a different function, before changing to receiving objects
-                        do
-                        {
-                            //---read incoming stream---
-                            int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
-
-                            //---convert the data received into a string---
-                            dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                            Console.WriteLine("Received : " + dataReceived);
-
-                            //---write back the text to the client---
-                            Console.WriteLine("Sending back : " + dataReceived);
-                            SendToAllClients(buffer, bytesRead);
-                        }
-                        while (dataReceived.ToLower() != "exit");
-                        //ToDo: to send & recieve repeatedly, should find a way to loop the send & receive 
-                        //      and take the client.close() out of the loop
-                        client.Close();
+                        receiveMessagesAsText(client);
                     }, null);
                 }
             }
@@ -82,9 +60,7 @@ namespace AssaChat
         }
         private void addClientToList(int port, TcpClient client)
         {
-
             _clientsList.TryAdd(client, port.ToString());
-
         }
         private void SendToAllClients(byte[] buffer, int bytesRead)
         {
@@ -93,6 +69,32 @@ namespace AssaChat
                 NetworkStream nwStream = client_port.Key.GetStream();
                 nwStream.Write(buffer, 0, bytesRead);
             }
+        }
+        private void receiveMessagesAsText(TcpClient client)
+        {
+            //---get the incoming data through a network stream---
+            NetworkStream nwStream = client.GetStream();
+            byte[] buffer = new byte[client.ReceiveBufferSize];
+
+            string dataReceived;
+            //ToDo: split text send and recieve to a different function, before changing to receiving objects
+            do
+            {
+                //---read incoming stream---
+                int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
+
+                //---convert the data received into a string---
+                dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                Console.WriteLine("Received : " + dataReceived);
+
+                //---write back the text to the client---
+                Console.WriteLine("Sending back : " + dataReceived);
+                SendToAllClients(buffer, bytesRead);
+            }
+            while (dataReceived.ToLower() != "exit");
+            //ToDo: to send & recieve repeatedly, should find a way to loop the send & receive 
+            //      and take the client.close() out of the loop
+            client.Close();
         }
 
 
