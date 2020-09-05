@@ -74,6 +74,7 @@ namespace AssaChat
                 connectionEstablishedPrint(client, clientName);
                 //---send the text---
                 nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+                SendToAllClients($"{clientName} joined!");
                 return true;
             }
             else
@@ -95,18 +96,37 @@ namespace AssaChat
             return false;
             
         }
+        private void removeClientFromList(TcpClient client)
+        {
+
+            string clientName = "";
+            foreach (var clt in _clientsList)
+            {
+                if (clt.Value == client)
+                {
+                    clientName = clt.Key;
+                    _clientsList.TryRemove(clientName, out client);
+                    Console.WriteLine($"{clientName} left the chat!");
+                    break;
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(clientName))
+                SendToAllClients($"{clientName} left!");
+        }
         private void connectionEstablishedPrint(TcpClient client, string Name)
         {
             Console.WriteLine($"{Name} is connected. Remote connection: {0}:{1} ",
                         ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
                         ((IPEndPoint)client.Client.RemoteEndPoint).Port.ToString());
         }
-        private void SendToAllClients(byte[] buffer, int bytesRead)
+        private void SendToAllClients(string msg)
         {
+            byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(msg);
             foreach (var client_port in _clientsList)
             {
                 NetworkStream nwStream = client_port.Value.GetStream();
-                nwStream.Write(buffer, 0, bytesRead);
+
+                nwStream.Write(bytesToSend, 0, bytesToSend.Length);
             }
         }
         private void receiveMessagesAsText(TcpClient client)
@@ -118,21 +138,30 @@ namespace AssaChat
             string dataReceived;
             //ToDo: split text send and recieve to a different function, before changing to receiving objects
             do
-            {
+            { 
                 //---read incoming stream---
-                int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
+                try
+                {
+                    int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
+                    //---convert the data received into a string---
+                    dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    Console.WriteLine("Received : " + dataReceived);
 
-                //---convert the data received into a string---
-                dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                Console.WriteLine("Received : " + dataReceived);
+                    //---write back the text to the client---
+                    Console.WriteLine("Sending to all clients : " + dataReceived);
+                    SendToAllClients(dataReceived);
+                }
+                catch
+                {
+                    break;
+                }
 
-                //---write back the text to the client---
-                Console.WriteLine("Sending back : " + dataReceived);
-                SendToAllClients(buffer, bytesRead);
+                
             }
-            while (dataReceived.ToLower() != "exit");
+            while (!dataReceived.ToLower().Contains("exit!"));
             //ToDo: to send & recieve repeatedly, should find a way to loop the send & receive 
             //      and take the client.close() out of the loop
+            removeClientFromList(client);
             client.Close();
         }
 
