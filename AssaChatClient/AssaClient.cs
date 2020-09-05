@@ -10,36 +10,34 @@ namespace AssaChatClient
     {
         private IPAddress _serverAddress;
         private int _port;
+        private TcpClient _client;
+        public string Name;
 
-        public AssaClient(string address, int port)
+        public AssaClient(string address, int port, int clientNumber)
         {
             _serverAddress = IPAddress.Parse(address);
             _port = port;
+            Name = "client" + clientNumber;
+            _client = new TcpClient(_serverAddress.ToString(), _port);
         }
         public void Run()
         {
-            TcpClient client = new TcpClient(_serverAddress.ToString(), _port);
+            
             try
             {
-                NetworkStream nwStream = client.GetStream();
-                //ToDo: Figure the best way to send and recieve repeatedly (not to stop after one send);
-                //ToDo: Test if the server can send data to the client, without recieving data from client first
-                while (true)
+                using (NetworkStream nwStream = _client.GetStream())
                 {
+                    //ToDo: Figure the best way to send and recieve repeatedly (not to stop after one send);
+                    //ToDo: Test if the server can send data to the client, without recieving data from client first
+                    while (true)
+                    {
 
-                    string textToSend = "a";
-                    byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(textToSend);
+                        ThreadPool.QueueUserWorkItem(obj => WriteAMessage(nwStream));
+                        ThreadPool.QueueUserWorkItem(obj => ReceiveAMessage(nwStream));
 
-                    //---send the text---
-                    Console.WriteLine("Sending : " + textToSend);
-                    nwStream.Write(bytesToSend, 0, bytesToSend.Length);
 
-                    //---read back the text---
-                    byte[] bytesToRead = new byte[client.ReceiveBufferSize];
-                    int bytesRead = nwStream.Read(bytesToRead, 0, client.ReceiveBufferSize);
-                    Console.WriteLine("Received : " + Encoding.ASCII.GetString(bytesToRead, 0, bytesRead));
-
-                    Thread.Sleep(1000);
+                        Thread.Sleep(1000);
+                    }
                 }
             }
             catch (Exception e)
@@ -49,8 +47,26 @@ namespace AssaChatClient
             finally
             {
                 //ToDo: Figure out a way to terminate client
-                client.Close();
+
+                _client.Close();
             }
+        }
+
+        private void WriteAMessage(NetworkStream nwStream)
+        {
+            string textToSend = $"{Name}: a";
+            byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(textToSend);
+
+            //---send the text---
+            Console.WriteLine("Sending : " + textToSend);
+            nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+        }
+        private void ReceiveAMessage(NetworkStream nwStream)
+        {
+            //---read back the text---
+            byte[] bytesToRead = new byte[_client.ReceiveBufferSize];
+            int bytesRead = nwStream.Read(bytesToRead, 0, _client.ReceiveBufferSize);
+            Console.WriteLine("Received : " + Encoding.ASCII.GetString(bytesToRead, 0, bytesRead));
         }
     }
 }

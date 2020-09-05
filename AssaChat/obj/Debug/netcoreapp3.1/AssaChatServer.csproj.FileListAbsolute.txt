@@ -1,0 +1,12 @@
+C:\Code\AssaChat\AssaChat\bin\Debug\netcoreapp3.1\AssaChatServer.exe
+C:\Code\AssaChat\AssaChat\bin\Debug\netcoreapp3.1\AssaChatServer.deps.json
+C:\Code\AssaChat\AssaChat\bin\Debug\netcoreapp3.1\AssaChatServer.runtimeconfig.json
+C:\Code\AssaChat\AssaChat\bin\Debug\netcoreapp3.1\AssaChatServer.runtimeconfig.dev.json
+C:\Code\AssaChat\AssaChat\bin\Debug\netcoreapp3.1\AssaChatServer.dll
+C:\Code\AssaChat\AssaChat\bin\Debug\netcoreapp3.1\AssaChatServer.pdb
+C:\Code\AssaChat\AssaChat\obj\Debug\netcoreapp3.1\AssaChatServer.AssemblyInfoInputs.cache
+C:\Code\AssaChat\AssaChat\obj\Debug\netcoreapp3.1\AssaChatServer.AssemblyInfo.cs
+C:\Code\AssaChat\AssaChat\obj\Debug\netcoreapp3.1\AssaChatServer.csproj.CoreCompileInputs.cache
+C:\Code\AssaChat\AssaChat\obj\Debug\netcoreapp3.1\AssaChatServer.dll
+C:\Code\AssaChat\AssaChat\obj\Debug\netcoreapp3.1\AssaChatServer.pdb
+C:\Code\AssaChat\AssaChat\obj\Debug\netcoreapp3.1\AssaChatServer.genruntimeconfig.cache

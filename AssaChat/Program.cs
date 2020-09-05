@@ -6,7 +6,8 @@ namespace AssaChat
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            AssaServer server = new AssaServer(8844);
+            server.Run();
         }
     }
 }
