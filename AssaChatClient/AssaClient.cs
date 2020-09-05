@@ -29,14 +29,12 @@ namespace AssaChatClient
                 {
                     //ToDo: Figure the best way to send and recieve repeatedly (not to stop after one send);
                     //ToDo: Test if the server can send data to the client, without recieving data from client first
+                    ThreadPool.QueueUserWorkItem(obj => ReceiveMessages(nwStream));
                     while (true)
                     {
 
-                        ThreadPool.QueueUserWorkItem(obj => WriteAMessage(nwStream));
-                        ThreadPool.QueueUserWorkItem(obj => ReceiveAMessage(nwStream));
-
-
-                        Thread.Sleep(1000);
+                        WriteAMessage(nwStream);
+                        
                     }
                 }
             }
@@ -54,19 +52,24 @@ namespace AssaChatClient
 
         private void WriteAMessage(NetworkStream nwStream)
         {
-            string textToSend = $"{Name}: a";
+            Console.WriteLine("Write a message:");
+            string msg = Console.ReadLine();
+            string textToSend = $"{Name}: {msg}";
             byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(textToSend);
 
             //---send the text---
-            Console.WriteLine("Sending : " + textToSend);
+            Console.WriteLine("Sending : " + msg);
             nwStream.Write(bytesToSend, 0, bytesToSend.Length);
         }
-        private void ReceiveAMessage(NetworkStream nwStream)
+        private void ReceiveMessages(NetworkStream nwStream)
         {
             //---read back the text---
-            byte[] bytesToRead = new byte[_client.ReceiveBufferSize];
-            int bytesRead = nwStream.Read(bytesToRead, 0, _client.ReceiveBufferSize);
-            Console.WriteLine("Received : " + Encoding.ASCII.GetString(bytesToRead, 0, bytesRead));
+            while (true)
+            {
+                byte[] bytesToRead = new byte[_client.ReceiveBufferSize];
+                int bytesRead = nwStream.Read(bytesToRead, 0, _client.ReceiveBufferSize);
+                Console.WriteLine("Received : " + Encoding.ASCII.GetString(bytesToRead, 0, bytesRead));
+            }
         }
     }
 }
