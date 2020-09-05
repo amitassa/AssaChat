@@ -69,7 +69,12 @@ namespace AssaChatClient
             {
                 byte[] bytesToRead = new byte[_client.ReceiveBufferSize];
                 int bytesRead = nwStream.Read(bytesToRead, 0, _client.ReceiveBufferSize);
-                Console.WriteLine("Received : " + Encoding.ASCII.GetString(bytesToRead, 0, bytesRead));
+                string received = Encoding.ASCII.GetString(bytesToRead, 0, bytesRead);
+                if (string.IsNullOrWhiteSpace(received))
+                {
+                    break;
+                }
+                Console.WriteLine("Received : " + received);
             }
         }
     }
