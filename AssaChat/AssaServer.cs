@@ -32,12 +32,6 @@ namespace AssaChat
                 {
                     //---incoming client connected---
                     TcpClient client = _server.AcceptTcpClient();
-
-                    Console.WriteLine("Connected to: {0}:{1} ",
-                        ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
-                        ((IPEndPoint)client.Client.RemoteEndPoint).Port.ToString());
-                    
-
                     object obj = new object();
                     ThreadPool.QueueUserWorkItem(obj =>
                     {
@@ -61,6 +55,13 @@ namespace AssaChat
         private void addClientToList(int port, TcpClient client)
         {
             _clientsList.TryAdd(client, port.ToString());
+            connectionEstablishedPrint(client);
+        }
+        private void connectionEstablishedPrint(TcpClient client)
+        {
+            Console.WriteLine("Connected to: {0}:{1} ",
+                        ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
+                        ((IPEndPoint)client.Client.RemoteEndPoint).Port.ToString());
         }
         private void SendToAllClients(byte[] buffer, int bytesRead)
         {
