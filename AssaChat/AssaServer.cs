@@ -47,7 +47,7 @@ namespace AssaChat
                         byte[] buffer = new byte[client.ReceiveBufferSize];
 
                         string dataReceived;
-
+                        //ToDo: split text send and recieve to a different function, before changing to receiving objects
                         do
                         {
                             //---read incoming stream---
