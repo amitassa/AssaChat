@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssaChatServer", "AssaChat\AssaChatServer.csproj", "{722C10E0-E9C6-4812-ADA3-3D5A2DA288A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssaChatClient", "AssaChatClient\AssaChatClient.csproj", "{C3404A1A-4B88-41BF-B40C-AED89C1FB71D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{722C10E0-E9C6-4812-ADA3-3D5A2DA288A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{722C10E0-E9C6-4812-ADA3-3D5A2DA288A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{722C10E0-E9C6-4812-ADA3-3D5A2DA288A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{722C10E0-E9C6-4812-ADA3-3D5A2DA288A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3404A1A-4B88-41BF-B40C-AED89C1FB71D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3404A1A-4B88-41BF-B40C-AED89C1FB71D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3404A1A-4B88-41BF-B40C-AED89C1FB71D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3404A1A-4B88-41BF-B40C-AED89C1FB71D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {75D2A7AC-C585-4364-B4F4-5CBBB959A587}
+	EndGlobalSection
+EndGlobal
