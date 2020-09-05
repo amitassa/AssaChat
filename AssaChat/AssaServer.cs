@@ -11,13 +11,13 @@ namespace AssaChat
     {
         private IPAddress _localAddress;
         private TcpListener _server;
-        private ConcurrentDictionary<TcpClient, string> _clientsList;
+        private ConcurrentDictionary<string, TcpClient> _clientsList;
 
         public AssaServer(int port)
         {
             _localAddress = IPAddress.Parse("127.0.0.1");
             _server = new TcpListener(_localAddress, port);
-            _clientsList = new ConcurrentDictionary<TcpClient, string>();
+            _clientsList = new ConcurrentDictionary<string, TcpClient>();
         }
         public void Run()
         {
@@ -35,8 +35,14 @@ namespace AssaChat
                     object obj = new object();
                     ThreadPool.QueueUserWorkItem(obj =>
                     {
-                        addClientToList(((IPEndPoint)client.Client.RemoteEndPoint).Port, client);
-                        receiveMessagesAsText(client);
+                        if (registerClient(client))
+                        {
+                            receiveMessagesAsText(client);
+                        }
+                        else
+                        {
+                            client.Close();
+                        }
                     }, null);
                 }
             }
@@ -52,14 +58,46 @@ namespace AssaChat
             }
 
         }
-        private void addClientToList(int port, TcpClient client)
+        private bool registerClient(TcpClient client)
         {
-            _clientsList.TryAdd(client, port.ToString());
-            connectionEstablishedPrint(client);
+            NetworkStream nwStream = client.GetStream();
+            byte[] buffer = new byte[client.ReceiveBufferSize];
+
+            //---read incoming stream---
+            int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
+
+            //---convert the data received into a string---
+            string clientName = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+            if (tryAddClientToList(clientName, client))
+            {
+                byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes($"Welcome, {clientName}");
+                connectionEstablishedPrint(client, clientName);
+                //---send the text---
+                nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+                return true;
+            }
+            else
+            {
+                byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes($"{clientName} name is already taken");
+                //---send the text---
+                nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+                return false;
+            }
+
         }
-        private void connectionEstablishedPrint(TcpClient client)
+        private bool tryAddClientToList(string name, TcpClient client)
         {
-            Console.WriteLine("Connected to: {0}:{1} ",
+            if (!_clientsList.ContainsKey(name))
+            {
+                _clientsList.TryAdd(name, client);
+                return true;
+            }
+            return false;
+            
+        }
+        private void connectionEstablishedPrint(TcpClient client, string Name)
+        {
+            Console.WriteLine($"{Name} is connected. Remote connection: {0}:{1} ",
                         ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
                         ((IPEndPoint)client.Client.RemoteEndPoint).Port.ToString());
         }
@@ -67,7 +105,7 @@ namespace AssaChat
         {
             foreach (var client_port in _clientsList)
             {
-                NetworkStream nwStream = client_port.Key.GetStream();
+                NetworkStream nwStream = client_port.Value.GetStream();
                 nwStream.Write(buffer, 0, bytesRead);
             }
         }
