@@ -27,8 +27,7 @@ namespace AssaChatClient
             {
                 using (NetworkStream nwStream = _client.GetStream())
                 {
-                    //ToDo: Figure the best way to send and recieve repeatedly (not to stop after one send);
-                    //ToDo: Test if the server can send data to the client, without recieving data from client first
+
                     ThreadPool.QueueUserWorkItem(obj => ReceiveMessages(nwStream));
                     while (true)
                     {
@@ -44,7 +43,7 @@ namespace AssaChatClient
             }
             finally
             {
-                //ToDo: Figure out a way to terminate client
+                
 
                 _client.Close();
             }
