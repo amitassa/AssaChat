@@ -22,18 +22,14 @@ namespace AssaChatClient
         }
         public void Run()
         {
-            
             try
             {
                 using (NetworkStream nwStream = _client.GetStream())
                 {
-
                     ThreadPool.QueueUserWorkItem(obj => ReceiveMessages(nwStream));
                     while (true)
                     {
-
-                        WriteAMessage(nwStream);
-                        
+                        WriteAMessage(nwStream);   
                     }
                 }
             }
@@ -43,15 +39,13 @@ namespace AssaChatClient
             }
             finally
             {
-                
-
                 _client.Close();
             }
         }
 
         private void WriteAMessage(NetworkStream nwStream)
         {
-            Console.WriteLine("Write a message:");
+            Console.WriteLine("Your message:");
             string msg = Console.ReadLine();
             string textToSend = $"{Name}: {msg}";
             byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(textToSend);
